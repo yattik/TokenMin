@@ -10,6 +10,84 @@ It does **not** replace Copilot, send background work to Copilot, or drive the
 agent loop. TokenMin prepares better context surfaces for Copilot and gives the
 developer explicit control over every repo mutation.
 
+## Getting Started On A New System
+
+Follow these steps to clone, build, and run TokenMin from scratch on a fresh
+machine.
+
+### 1. Prerequisites
+
+| Tool | Version | Notes |
+| --- | --- | --- |
+| [Node.js](https://nodejs.org) | **>= 18** | Bundled `npm` is used for all scripts. |
+| [Git](https://git-scm.com) | any recent | To clone the repository. |
+| [VS Code](https://code.visualstudio.com) | **>= 1.90** | Required to run the extension. |
+
+Verify the toolchain:
+
+```sh
+node --version    # should print v18 or newer
+npm --version
+code --version
+```
+
+### 2. Clone The Repository
+
+```sh
+git clone https://github.com/yattik/TokenMin.git
+cd TokenMin
+```
+
+To work on the in-progress branch instead of `main`:
+
+```sh
+git checkout knowledge-graph
+```
+
+### 3. Install Dependencies
+
+```sh
+npm install
+```
+
+### 4. Build
+
+```sh
+npm run compile        # type-check + bundle to dist/extension.js
+```
+
+Use watch mode while developing so the bundle rebuilds on every save:
+
+```sh
+npm run watch
+```
+
+### 5. Run The Extension In A Dev Window
+
+1. Open the folder in VS Code (`code .`).
+2. Press **F5** (Run → Start Debugging) using the **Run Extension** launch
+   config. This compiles the extension and opens a second **Extension
+   Development Host** window with TokenMin loaded.
+3. In that window, open the Command Palette (`Ctrl+Shift+P`) and run a command,
+   e.g. **Token Optimizer: Open Dashboard** or
+   **Token Optimizer: Analyze Repo (report only)**.
+
+### 6. Run The Tests
+
+```sh
+npm test               # unit + integration tests, no editor host required
+```
+
+### 7. Optional Token-Comparison Reports
+
+These scripts run outside the editor and regenerate the estimate reports at the
+repo root:
+
+```sh
+npm run compare:tokens     # token-usage-report.{md,json}
+npm run compare:sessions   # session-comparison-report.{md,json}
+```
+
 ## What TokenMin Does Precisely
 
 TokenMin has four practical jobs:
@@ -462,84 +540,6 @@ Safety properties:
 | `tokenmin.maxFilesScanned` | `20000` | Caps the file walk for large repositories. |
 | `tokenmin.knowledgeGraph.binaryPath` | empty | Optional absolute path to a manually installed `codebase-memory-mcp` binary. |
 | `tokenmin.knowledgeGraph.uiPort` | `9749` | Port used when starting the embedded codebase-memory 3D UI. |
-
-## Getting Started On A New System
-
-Follow these steps to clone, build, and run TokenMin from scratch on a fresh
-machine.
-
-### 1. Prerequisites
-
-| Tool | Version | Notes |
-| --- | --- | --- |
-| [Node.js](https://nodejs.org) | **>= 18** | Bundled `npm` is used for all scripts. |
-| [Git](https://git-scm.com) | any recent | To clone the repository. |
-| [VS Code](https://code.visualstudio.com) | **>= 1.90** | Required to run the extension. |
-
-Verify the toolchain:
-
-```sh
-node --version    # should print v18 or newer
-npm --version
-code --version
-```
-
-### 2. Clone The Repository
-
-```sh
-git clone https://github.com/yattik/TokenMin.git
-cd TokenMin
-```
-
-To work on the in-progress branch instead of `main`:
-
-```sh
-git checkout knowledge-graph
-```
-
-### 3. Install Dependencies
-
-```sh
-npm install
-```
-
-### 4. Build
-
-```sh
-npm run compile        # type-check + bundle to dist/extension.js
-```
-
-Use watch mode while developing so the bundle rebuilds on every save:
-
-```sh
-npm run watch
-```
-
-### 5. Run The Extension In A Dev Window
-
-1. Open the folder in VS Code (`code .`).
-2. Press **F5** (Run → Start Debugging) using the **Run Extension** launch
-   config. This compiles the extension and opens a second **Extension
-   Development Host** window with TokenMin loaded.
-3. In that window, open the Command Palette (`Ctrl+Shift+P`) and run a command,
-   e.g. **Token Optimizer: Open Dashboard** or
-   **Token Optimizer: Analyze Repo (report only)**.
-
-### 6. Run The Tests
-
-```sh
-npm test               # unit + integration tests, no editor host required
-```
-
-### 7. Optional Token-Comparison Reports
-
-These scripts run outside the editor and regenerate the estimate reports at the
-repo root:
-
-```sh
-npm run compare:tokens     # token-usage-report.{md,json}
-npm run compare:sessions   # session-comparison-report.{md,json}
-```
 
 ## Build, Test, And Package
 
