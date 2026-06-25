@@ -62,6 +62,115 @@ For a demo or pitch, frame it as:
 > smarter by magic; it gives Copilot less irrelevant material and better local
 > maps, so the same model can spend more of its budget on the actual task.
 
+## Local Codebase Memory For Agents
+
+TokenMin's knowledge graph feature creates a local memory base from the current
+repository and exposes it to Copilot agents through MCP. The memory is local to
+the developer machine: TokenMin manages the `codebase-memory-mcp` runtime in VS
+Code global storage, indexes the selected repo, and writes MCP/agent files that
+tell Copilot how to query the graph before reading broad file areas.
+
+### How The Memory Is Built
+
+```mermaid
+flowchart LR
+  Repo[Workspace repository]
+  TokenMin[TokenMin GraphService]
+  Runtime[Managed codebase-memory-mcp runtime]
+  Memory[(Local codebase memory)]
+  MCP[.vscode/mcp.json]
+  Agents[Graph-aware Copilot agents]
+  UI[Embedded 3D codebase-memory UI]
+
+  Repo -->|repo_path| TokenMin
+  TokenMin -->|ensure runtime| Runtime
+  Runtime -->|index_repository| Memory
+  TokenMin -->|merge server entry| MCP
+  TokenMin -->|generate guidance| Agents
+  Runtime -->|start UI server| UI
+  Memory -->|architecture, symbols, traces, changes| UI
+```
+
+### What The Memory Contains
+
+The local memory is a structural map of the repo rather than a full prompt dump.
+Agents query it for compact facts, then read only the specific files or snippets
+needed for the task.
+
+```mermaid
+flowchart TB
+  Memory[(Local codebase memory)]
+
+  Memory --> Project[Project]
+  Project --> Packages[Packages and modules]
+  Project --> Files[Files]
+  Project --> Symbols[Symbols]
+  Project --> Routes[Routes and entry points]
+  Project --> Hotspots[Hotspots]
+
+  Symbols --> Functions[Functions]
+  Symbols --> Classes[Classes]
+  Symbols --> Exports[Exports]
+
+  Symbols --> Relations[Relationships]
+  Files --> Relations
+  Packages --> Relations
+
+  Relations --> Calls[Call links]
+  Relations --> Imports[Import links]
+  Relations --> Ownership[File/module ownership]
+  Relations --> Impact[Change impact]
+
+  Memory --> QueryCache[TokenMin query cache]
+  QueryCache --> CachedSearch[Cached search_graph results]
+  QueryCache --> CachedTrace[Cached trace_path results]
+```
+
+### How An Agent Uses It
+
+The generated graph-aware agents and instructions steer Copilot toward graph
+queries first. The intended flow is: inspect architecture, locate symbols, trace
+relationships, then open exact files only after the graph has narrowed the work.
+
+```mermaid
+sequenceDiagram
+  participant User
+  participant Copilot as Copilot graph agent
+  participant MCP as codebase-memory MCP server
+  participant Memory as Local codebase memory
+  participant Files as Targeted repo files
+
+  User->>Copilot: Ask for a code change or investigation
+  Copilot->>MCP: get_architecture(project)
+  MCP->>Memory: Read packages, hotspots, languages, entry points
+  Memory-->>MCP: Compact architecture summary
+  MCP-->>Copilot: Relevant repo map
+
+  Copilot->>MCP: search_graph(symbol or pattern)
+  MCP->>Memory: Find matching symbols and files
+  Memory-->>MCP: Symbol/file candidates
+  MCP-->>Copilot: Ranked graph results
+
+  Copilot->>MCP: trace_path(symbol, direction)
+  MCP->>Memory: Resolve callers, callees, related paths
+  Memory-->>MCP: Relationship trace
+  MCP-->>Copilot: Impact-aware context
+
+  Copilot->>Files: Read or edit only the narrowed files
+  Copilot->>MCP: detect_changes(project)
+  MCP->>Memory: Compare diff against graph
+  Memory-->>Copilot: Affected symbols and blast radius
+```
+
+### Why This Helps
+
+Without local codebase memory, an agent often discovers context by searching and
+reading groups of files repeatedly. With TokenMin, the graph answers structural
+questions in compact responses: where a symbol lives, what calls it, what it
+calls, which files are likely affected, and whether a change touched a known
+hotspot. The agent still reads source code when needed, but it starts from a
+smaller and more relevant set of files.
+
 ## Main Optimize Flow
 
 The main command is **Token Optimizer: Analyze & Optimize Repo**
