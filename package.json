@@ -1,0 +1,136 @@
+{
+  "name": "copilot-token-efficiency-optimizer",
+  "displayName": "Copilot Token-Efficiency Optimizer",
+  "description": "Analyze a repo and apply token-reduction levers for Copilot agent mode (exclusions, scoped instructions, lean tool sets, plan/implement agents, healthy indexing) for more accuracy at lower AI-credit cost.",
+  "version": "0.1.0",
+  "publisher": "tokenmin",
+  "license": "MIT",
+  "private": true,
+  "type": "commonjs",
+  "engines": {
+    "vscode": "^1.90.0",
+    "node": ">=18"
+  },
+  "categories": [
+    "AI",
+    "Other"
+  ],
+  "keywords": [
+    "copilot",
+    "token",
+    "cost",
+    "agent",
+    "optimization"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "tokenmin.analyzeAndOptimize",
+        "title": "Token Optimizer: Analyze & Optimize Repo",
+        "category": "Token Optimizer"
+      },
+      {
+        "command": "tokenmin.analyzeOnly",
+        "title": "Token Optimizer: Analyze Repo (report only)",
+        "category": "Token Optimizer"
+      },
+      {
+        "command": "tokenmin.showReport",
+        "title": "Token Optimizer: Show Efficiency Report",
+        "category": "Token Optimizer"
+      },
+      {
+        "command": "tokenmin.undoLast",
+        "title": "Token Optimizer: Undo Last Applied Changes",
+        "category": "Token Optimizer"
+      }
+    ],
+    "configuration": {
+      "title": "Copilot Token-Efficiency Optimizer",
+      "properties": {
+        "tokenmin.exclusionAggressiveness": {
+          "type": "string",
+          "enum": [
+            "conservative",
+            "balanced",
+            "aggressive"
+          ],
+          "default": "balanced",
+          "markdownDescription": "How aggressively to recommend `search.exclude` / `files.exclude` globs. `conservative` excludes only well-known generated/dependency dirs; `aggressive` also excludes lockfiles, logs, and large data files."
+        },
+        "tokenmin.modelFamilyPreference": {
+          "type": "string",
+          "default": "gpt-4o",
+          "markdownDescription": "Preferred Copilot model family for the optional model-assisted tailoring pass (e.g. `gpt-4o`, `gpt-4.1`, `o1`). Falls back to any available model if the preferred family is unavailable."
+        },
+        "tokenmin.applyToNewBranch": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "When applying changes, offer to first create and switch to a new git branch so changes are isolated."
+        },
+        "tokenmin.maxFilesScanned": {
+          "type": "number",
+          "default": 20000,
+          "markdownDescription": "Safety cap on the number of files walked during analysis. Large repos are bounded to keep analysis fast."
+        }
+      }
+    },
+    "walkthroughs": [
+      {
+        "id": "tokenmin.gettingStarted",
+        "title": "Optimize your repo for Copilot agent mode",
+        "description": "Analyze your repository and apply token-efficiency levers so Copilot agent mode works more accurately at lower cost.",
+        "steps": [
+          {
+            "id": "analyze",
+            "title": "Analyze & Optimize",
+            "description": "Run the guided flow: analyze your repo, review recommendations, preview diffs, and apply.\n[Analyze & Optimize Repo](command:tokenmin.analyzeAndOptimize)",
+            "media": {
+              "markdown": "media/walkthrough-analyze.md"
+            }
+          },
+          {
+            "id": "report",
+            "title": "Review the efficiency scorecard",
+            "description": "Open the before/after efficiency report with deep links to indexing, debug logs, and cost controls.\n[Show Efficiency Report](command:tokenmin.showReport)",
+            "media": {
+              "markdown": "media/walkthrough-report.md"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package && npm run verify:bundle",
+    "compile": "tsc -p ./tsconfig.json --noEmit && node esbuild.js",
+    "watch": "node esbuild.js --watch",
+    "package": "node esbuild.js --production",
+    "verify:bundle": "node scripts/smoke-activate.js",
+    "lint": "eslint src --ext ts",
+    "compile-tests": "tsc -p ./tsconfig.json",
+    "pretest:unit": "npm run compile-tests",
+    "test:unit": "mocha",
+    "test": "npm run test:unit",
+    "vsce:package": "vsce package --allow-missing-repository --skip-license -o tokenmin.vsix"
+  },
+  "dependencies": {
+    "jsonc-parser": "^3.2.1"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.6",
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.90.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "@vscode/vsce": "^2.24.0",
+    "esbuild": "^0.20.0",
+    "eslint": "^8.56.0",
+    "mocha": "^10.3.0",
+    "typescript": "^5.4.0"
+  }
+}

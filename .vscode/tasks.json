@@ -1,0 +1,30 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "npm",
+      "script": "compile",
+      "group": "build",
+      "problemMatcher": "$tsc",
+      "label": "npm: compile",
+      "detail": "Type-check and bundle the extension"
+    },
+    {
+      "type": "npm",
+      "script": "watch",
+      "group": "build",
+      "isBackground": true,
+      "problemMatcher": "$esbuild-watch",
+      "label": "npm: watch",
+      "detail": "Watch and rebuild the extension"
+    },
+    {
+      "type": "npm",
+      "script": "test:unit",
+      "group": "test",
+      "problemMatcher": [],
+      "label": "npm: test:unit",
+      "detail": "Run unit tests"
+    }
+  ]
+}
