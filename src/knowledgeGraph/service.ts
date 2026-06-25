@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 import { GraphRuntime, ProgressFn } from './runtime';
 import { buildCliArgs, parseCliJson, asRecord, pickArray, pickString, pickNumber } from './cli';
 import { buildImpactReport, buildViewModel, emptyModel } from './graphModel';
-import { GraphViewModel, ImpactReport, RuntimeInfo } from './types';
+import { GraphProjectInfo, GraphViewModel, ImpactReport, RuntimeInfo } from './types';
 import { logLine } from '../util/output';
 import { estimateTokens } from '../model/chunking';
 import { CacheStats, GraphQueryCache } from './queryCache';
@@ -211,6 +211,48 @@ export class GraphService {
     };
   }
 
+  /**
+   * Every knowledge-graph instance the MCP server knows about (`list_projects`).
+   * Used by the dashboard to show all graphs at a glance; the one matching the
+   * open workspace is flagged with `current`. Returns `[]` when the runtime is
+   * not installed or the CLI cannot be reached.
+   */
+  async listProjects(activeRoot?: vscode.Uri): Promise<GraphProjectInfo[]> {
+    const info = await this.runtime.locate();
+    if (!info) {
+      return [];
+    }
+    const cwd = activeRoot ? this.repoPath(activeRoot) : process.cwd();
+    const res = await this.runtime.run(buildCliArgs('list_projects'), cwd, 30_000);
+    if (res.code !== 0) {
+      return [];
+    }
+    const parsed = asRecord(parseCliJson(res.stdout));
+    const activeNormalized = activeRoot ? normalizePath(this.repoPath(activeRoot)) : undefined;
+    return pickArray(parsed, 'projects')
+      .map((project): GraphProjectInfo | undefined => {
+        const rec = asRecord(project);
+        const name = pickString(rec, 'name', 'project');
+        if (!name) {
+          return undefined;
+        }
+        const rootPath = pickString(rec, 'root_path', 'rootPath', 'repo_path', 'repoPath');
+        // Remember the mapping so resolveProject can serve it without a re-scan.
+        if (rootPath) {
+          this.projectByRoot.set(rootPath, name);
+        }
+        return {
+          name,
+          rootPath,
+          files: pickNumber(rec, 'files', 'file_count', 'fileCount'),
+          symbols: pickNumber(rec, 'symbols', 'symbol_count', 'symbolCount', 'nodes', 'node_count'),
+          indexedAt: pickString(rec, 'indexed_at', 'indexedAt', 'updated_at', 'updatedAt', 'last_indexed'),
+          current: Boolean(activeNormalized && rootPath && normalizePath(rootPath) === activeNormalized),
+        };
+      })
+      .filter((p): p is GraphProjectInfo => p !== undefined);
+  }
+
   private async resolveProject(root: vscode.Uri): Promise<string | undefined> {
     const rootPath = this.repoPath(root);
     const cached = this.projectByRoot.get(rootPath);
@@ -219,23 +261,8 @@ export class GraphService {
     }
 
     await this.runtime.ensureInstalled();
-    const res = await this.runtime.run(buildCliArgs('list_projects'), rootPath, 30_000);
-    if (res.code !== 0) {
-      return undefined;
-    }
-    const parsed = asRecord(parseCliJson(res.stdout));
-    const projects = pickArray(parsed, 'projects');
-    const normalizedRoot = normalizePath(rootPath);
-    for (const project of projects) {
-      const rec = asRecord(project);
-      const projectRoot = pickString(rec, 'root_path', 'rootPath', 'repo_path', 'repoPath');
-      const name = pickString(rec, 'name', 'project');
-      if (name && projectRoot && normalizePath(projectRoot) === normalizedRoot) {
-        this.projectByRoot.set(rootPath, name);
-        return name;
-      }
-    }
-    return undefined;
+    const match = (await this.listProjects(root)).find((p) => p.current);
+    return match?.name;
   }
 }
 

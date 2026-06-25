@@ -9,7 +9,7 @@
  * Light-first Token Optimizer styling.
  */
 import { CacheStats } from '../knowledgeGraph/queryCache';
-import { GraphViewModel, ImpactReport } from '../knowledgeGraph/types';
+import { GraphProjectInfo, GraphViewModel, ImpactReport } from '../knowledgeGraph/types';
 import { brandCssVars, brandComponentStyles, brandLightSurfaceVars } from '../util/theme';
 
 export interface DashboardData {
@@ -21,6 +21,8 @@ export interface DashboardData {
   agentsConfigured: boolean;
   model: GraphViewModel;
   impact?: ImpactReport;
+  /** All knowledge-graph instances the MCP server tracks (`list_projects`). */
+  projects: GraphProjectInfo[];
   busy: boolean;
 }
 
@@ -85,6 +87,13 @@ export function renderDashboardHtml(data: DashboardData, opts: DashboardRenderOp
           <span class="act-sub">Restructure a vague request for Copilot</span>
         </span>
       </button>
+      <button class="act-accent" data-command="tokenmin.trackEnterpriseCopilotUsage">
+        <span class="act-icon">\u25c8</span>
+        <span class="act-body">
+          <b>Track Enterprise Usage</b>
+          <span class="act-sub">Fetch official GitHub Copilot metrics reports</span>
+        </span>
+      </button>
       <button class="act-ghost" data-action="openSettings">
         <span class="act-icon">\u2630</span>
         <span class="act-body">
@@ -94,10 +103,12 @@ export function renderDashboardHtml(data: DashboardData, opts: DashboardRenderOp
       </button>
     </div>
 
+    ${renderProjects(data.projects)}
+
     <div class="cache-row muted small">
       Query cache <span class="badge">estimates</span>:
       <b>${data.cache.hits}</b> hits \u00b7 <b>${data.cache.misses}</b> misses \u00b7 hit rate <b>${hitRate(data.cache)}</b>
-      \u2014 repeated queries cost ~0 new tokens. Estimated tokens only \u2014 Copilot billing is not exposed to extensions.
+      \u2014 repeated queries cost ~0 new tokens. Enterprise reports are official aggregates; Copilot billing is not exposed to extensions.
     </div>
   </div>
 
@@ -109,6 +120,40 @@ export function renderDashboardHtml(data: DashboardData, opts: DashboardRenderOp
 function hitRate(cache: CacheStats): string {
   const total = cache.hits + cache.misses;
   return total === 0 ? '\u2014' : `${Math.round((cache.hits / total) * 100)}%`;
+}
+
+/** The list of every knowledge-graph instance the MCP server tracks. */
+function renderProjects(projects: GraphProjectInfo[]): string {
+  if (projects.length === 0) {
+    return `
+    <h2>Knowledge graphs</h2>
+    <div class="kg-empty muted small">
+      No knowledge graphs yet. Index a repository to create one \u2014 every indexed repo
+      becomes a graph the <code>codebase-memory</code> MCP server can query.
+    </div>`;
+  }
+  const rows = projects
+    .map((p) => {
+      const meta = [
+        p.symbols !== undefined ? `${p.symbols.toLocaleString()} symbols` : undefined,
+        p.files !== undefined ? `${p.files.toLocaleString()} files` : undefined,
+        p.indexedAt ? `indexed ${escapeHtml(p.indexedAt)}` : undefined,
+      ]
+        .filter(Boolean)
+        .join(' \u00b7 ');
+      const path = p.rootPath ? escapeHtml(p.rootPath) : '';
+      const open = p.rootPath ? ` data-open-project="${escapeHtml(p.rootPath)}"` : '';
+      return `
+      <li class="kg-item${p.current ? ' current' : ''}"${open} title="${path}">
+        <span class="kg-name">${escapeHtml(p.name)}${p.current ? ' <span class="kg-here">this repo</span>' : ''}</span>
+        ${meta ? `<span class="kg-meta">${meta}</span>` : ''}
+        ${path ? `<span class="kg-path">${path}</span>` : ''}
+      </li>`;
+    })
+    .join('');
+  return `
+    <h2>Knowledge graphs <span class="badge">${projects.length}</span></h2>
+    <ul class="kg-list">${rows}</ul>`;
 }
 
 function dashboardStyles(): string {
@@ -167,7 +212,22 @@ function dashboardStyles(): string {
   .act-body { display: flex; flex-direction: column; gap: 0.03rem; }
   .act-body b { font-size: 0.84rem; font-weight: 600; }
   .act-sub { font-size: 0.71rem; opacity: 0.76; }
-  .cache-row { margin-top: 0.25rem; line-height: 1.8; }`;
+  .cache-row { margin-top: 0.25rem; line-height: 1.8; }
+  .kg-empty { background: var(--sh-surface); border: 1px solid var(--sh-border); border-radius: 8px;
+    padding: 0.55rem 0.75rem; line-height: 1.5; }
+  .kg-empty code { background: rgba(0,153,153,0.11); padding: 0.04rem 0.26rem; border-radius: 3px; }
+  .kg-list { list-style: none; margin: 0 0 0.7rem; padding: 0; display: flex; flex-direction: column; gap: 0.35rem; }
+  .kg-item { display: flex; flex-direction: column; gap: 0.12rem; background: var(--sh-surface);
+    border: 1px solid var(--sh-border); border-left: 3px solid transparent; border-radius: 8px;
+    padding: 0.45rem 0.7rem; box-shadow: var(--sh-shadow); cursor: pointer; }
+  .kg-item:hover { background: var(--sh-surface-3); }
+  .kg-item.current { border-left-color: var(--sh-petrol); }
+  .kg-name { font-size: 0.85rem; font-weight: 600; color: var(--sh-text); }
+  .kg-here { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.05em; color: #fff;
+    background: var(--sh-petrol); padding: 0.05rem 0.34rem; border-radius: 999px; vertical-align: middle; }
+  .kg-meta { font-size: 0.72rem; color: var(--sh-muted); }
+  .kg-path { font-size: 0.68rem; color: var(--sh-muted); font-family: var(--vscode-editor-font-family, monospace);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }`;
 }
 
 function outerScript(): string {
@@ -198,6 +258,8 @@ function outerScript(): string {
   document.body.addEventListener('click', (e) => {
     const el = e.target.closest('[data-open]');
     if (el) { e.preventDefault(); vscode.postMessage({ type: 'openFile', file: el.dataset.open }); }
+    const proj = e.target.closest('[data-open-project]');
+    if (proj) { e.preventDefault(); vscode.postMessage({ type: 'openProject', file: proj.dataset.openProject }); }
   });`;
 }
 

@@ -18,6 +18,7 @@ import { ReportPanel } from './report/reportWebview';
 import { registerKnowledgeGraphCommands, getGraphService } from './knowledgeGraph/commands';
 import { DashboardPanel } from './dashboard/dashboardPanel';
 import { PromptPanel } from './prompt/promptPanel';
+import { trackEnterpriseCopilotUsage } from './github/copilotMetricsCommand';
 
 let previewProvider: PreviewContentProvider;
 let applyService: ApplyService;
@@ -47,6 +48,9 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.commands.registerCommand('tokenmin.analyzeAndOptimize', () => runSafely('Analyze & Optimize', () => runAnalyze(true))),
     vscode.commands.registerCommand('tokenmin.analyzeOnly', () => runSafely('Analyze', () => runAnalyze(false))),
     vscode.commands.registerCommand('tokenmin.showReport', () => runSafely('Show Report', showReport)),
+    vscode.commands.registerCommand('tokenmin.trackEnterpriseCopilotUsage', () =>
+      runSafely('Track Enterprise Copilot Usage', trackEnterpriseCopilotUsage),
+    ),
     vscode.commands.registerCommand('tokenmin.undoLast', () => runSafely('Undo', () => applyService.undoLast())),
     ...registerKnowledgeGraphCommands(context, applyService),
   );

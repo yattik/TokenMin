@@ -6,7 +6,7 @@
 import * as vscode from 'vscode';
 import { renderDashboardHtml } from './dashboardHtml';
 import { GraphService } from '../knowledgeGraph/service';
-import { GraphViewModel, ImpactReport } from '../knowledgeGraph/types';
+import { GraphProjectInfo, GraphViewModel, ImpactReport } from '../knowledgeGraph/types';
 import { emptyModel } from '../knowledgeGraph/graphModel';
 import { GraphUiPanel } from '../knowledgeGraph/graphUiPanel';
 import { rowsToHtml } from '../knowledgeGraph/graphPanel';
@@ -17,6 +17,7 @@ export class DashboardPanel {
   private disposables: vscode.Disposable[] = [];
   private model: GraphViewModel;
   private impact: ImpactReport | undefined;
+  private projects: GraphProjectInfo[] = [];
   private busy = false;
   private root: vscode.Uri | undefined;
 
@@ -47,36 +48,48 @@ export class DashboardPanel {
   }
 
   private async refresh(): Promise<void> {
+    // Paint immediately with whatever state we already have so the panel is
+    // never a blank (black) webview while the knowledge-graph runtime is being
+    // located and queried — those calls can spawn a CLI and take seconds.
+    await this.render();
     if (this.root) {
       this.model = await this.service.getViewModel(this.root).catch(
         () => emptyModel(basename(this.root!.fsPath), 'Could not read the graph.'),
       );
     }
+    this.projects = await this.service.listProjects(this.root).catch(() => []);
     await this.render();
   }
 
   private async render(): Promise<void> {
     const nonce = makeNonce();
-    const info = await this.service.locate();
     const folder = this.root;
-    const mcpConfigured = folder ? await fileExists(vscode.Uri.joinPath(folder, '.vscode', 'mcp.json')) : false;
+    const info = await this.service.locate().catch(() => undefined);
+    const mcpConfigured = folder
+      ? await fileExists(vscode.Uri.joinPath(folder, '.vscode', 'mcp.json'))
+      : false;
     const agentsConfigured = folder
       ? await fileExists(vscode.Uri.joinPath(folder, '.github', 'agents', 'graph-plan.agent.md'))
       : false;
-    this.panel.webview.html = renderDashboardHtml(
-      {
-        cache: this.service.cacheStats(),
-        runtimeInstalled: Boolean(info),
-        runtimeSource: info?.source,
-        projectName: folder ? basename(folder.fsPath) : undefined,
-        mcpConfigured,
-        agentsConfigured,
-        model: this.model,
-        impact: this.impact,
-        busy: this.busy,
-      },
-      { nonce, cspSource: this.panel.webview.cspSource },
-    );
+    try {
+      this.panel.webview.html = renderDashboardHtml(
+        {
+          cache: this.service.cacheStats(),
+          runtimeInstalled: Boolean(info),
+          runtimeSource: info?.source,
+          projectName: folder ? basename(folder.fsPath) : undefined,
+          mcpConfigured,
+          agentsConfigured,
+          model: this.model,
+          impact: this.impact,
+          projects: this.projects,
+          busy: this.busy,
+        },
+        { nonce, cspSource: this.panel.webview.cspSource },
+      );
+    } catch (err) {
+      this.panel.webview.html = fallbackHtml(err instanceof Error ? err.message : String(err));
+    }
   }
 
   private async onMessage(msg: {
@@ -101,6 +114,11 @@ export class DashboardPanel {
       case 'openFile':
         if (msg.file) {
           await this.openFile(msg.file);
+        }
+        return;
+      case 'openProject':
+        if (msg.file) {
+          await this.openProject(msg.file);
         }
         return;
       case 'openUi':
@@ -204,6 +222,16 @@ export class DashboardPanel {
     }
   }
 
+  /** Open another knowledge-graph instance's repo folder in a new window. */
+  private async openProject(path: string): Promise<void> {
+    const uri = vscode.Uri.file(path);
+    if (this.root && uri.fsPath === this.root.fsPath) {
+      void vscode.window.showInformationMessage('That knowledge graph is the current workspace.');
+      return;
+    }
+    await vscode.commands.executeCommand('vscode.openFolder', uri, { forceNewWindow: true });
+  }
+
   private async openFile(file: string): Promise<void> {
     const uri =
       /^[a-zA-Z]:[\\/]/.test(file)
@@ -239,4 +267,16 @@ function makeNonce(): string {
   let out = '';
   for (let i = 0; i < 32; i++) { out += chars.charAt(Math.floor(Math.random() * chars.length)); }
   return out;
+}
+
+/** Minimal, dependency-free HTML so the panel is never a blank webview. */
+function fallbackHtml(message: string): string {
+  const safe = message.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" /></head>
+<body style="font-family: var(--vscode-font-family, sans-serif); padding: 1rem;">
+  <h2>Token Optimizer</h2>
+  <p>The dashboard could not render its full view. You can still use the commands from the Command Palette.</p>
+  <p style="opacity:0.7;font-size:0.85rem;">Details: ${safe}</p>
+</body></html>`;
 }

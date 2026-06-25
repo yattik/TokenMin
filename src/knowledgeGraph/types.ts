@@ -31,6 +31,25 @@ export interface RuntimeInfo {
   source: RuntimeSource;
 }
 
+/**
+ * One knowledge-graph instance tracked by the codebase-memory MCP server
+ * (`list_projects`). Each indexed repository is a separate project/graph.
+ */
+export interface GraphProjectInfo {
+  /** Project name as stored by the MCP server. */
+  name: string;
+  /** Absolute repo path the graph was indexed from, when known. */
+  rootPath?: string;
+  /** Indexed file count, when reported. */
+  files?: number;
+  /** Indexed symbol/node count, when reported. */
+  symbols?: number;
+  /** Last index timestamp, when reported. */
+  indexedAt?: string;
+  /** True when this graph matches the currently open workspace. */
+  current?: boolean;
+}
+
 /** The MCP CLI tools this extension drives. */
 export type GraphTool =
   | 'index_repository'

@@ -54,6 +54,11 @@
         "category": "Token Optimizer"
       },
       {
+        "command": "tokenmin.trackEnterpriseCopilotUsage",
+        "title": "Token Optimizer: Track Enterprise Copilot Usage",
+        "category": "Token Optimizer"
+      },
+      {
         "command": "tokenmin.undoLast",
         "title": "Token Optimizer: Undo Last Applied Changes",
         "category": "Token Optimizer"
@@ -126,6 +131,16 @@
           "type": "string",
           "default": "gpt-4o",
           "markdownDescription": "Preferred Copilot model family for the optional model-assisted tailoring pass (e.g. `gpt-4o`, `gpt-4.1`, `o1`). Falls back to any available model if the preferred family is unavailable."
+        },
+        "tokenmin.github.enterpriseSlug": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "GitHub Enterprise slug used by `Track Enterprise Copilot Usage` to fetch official Copilot metrics reports. TokenMin authenticates through VS Code's GitHub account provider; do not store personal access tokens here."
+        },
+        "tokenmin.github.baseUrl": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "GitHub Enterprise host for `Track Enterprise Copilot Usage`. Use your enterprise URL, e.g. `https://shs.ghe.com` (Enterprise Cloud with data residency) or `https://github.example.com` (Enterprise Server). When set, TokenMin signs in with VS Code's GitHub Enterprise provider and calls the matching REST API base. Leave empty to use github.com."
         },
         "tokenmin.applyToNewBranch": {
           "type": "boolean",

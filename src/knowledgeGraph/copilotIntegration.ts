@@ -70,22 +70,31 @@ const TOOLS_LINE =
   'get_architecture, search_graph, trace_path, detect_changes, get_code_snippet, search_code, query_graph';
 
 function workflowBody(): string {
-  return `## Use the knowledge graph first
+  return `## Query the knowledge graph BEFORE reading files
 
 This repository is indexed by the \`${MCP_SERVER_ID}\` MCP server (codebase-memory-mcp).
-Prefer its graph tools over reading many files — they return the same structural
-facts for a fraction of the tokens.
+Its graph tools return the same structural facts as reading source files, for a
+fraction of the tokens. Using them is **mandatory**, not optional.
 
-Recommended order before touching code:
+**Rule: do NOT call the built-in file tools (read_file / readFile, codebase,
+search, grep, list_dir, usages) to discover where code lives until you have
+first answered the question with the \`${MCP_SERVER_ID}\` graph tools.** Only fall
+back to a raw file read when the graph genuinely cannot answer — and say why.
+
+Required order for any "where / what / how is X" question:
 
 1. \`get_architecture\` — packages, hotspots, languages, entry points.
 2. \`search_graph\` — locate symbols by name/regex (callers, callees, degree).
 3. \`trace_path\` — find how two symbols connect.
 4. \`detect_changes\` — for a diff, list the impacted symbols.
-5. \`get_code_snippet\` / \`search_code\` — pull only the exact lines you need.
+5. \`get_code_snippet\` / \`search_code\` — pull only the exact lines you need
+   (prefer these over \`read_file\` even when you do need source text).
 
-Only fall back to broad file reads when the graph cannot answer the question.
-Available tools: ${TOOLS_LINE}.
+Available graph tools: ${TOOLS_LINE}.
+
+If the \`${MCP_SERVER_ID}\` server is not connected, ask the user to start it
+(Copilot Chat → MCP servers → start "${MCP_SERVER_ID}", reload if needed) instead
+of silently defaulting to broad file reads.
 
 > Token note: savings are estimates. Copilot's actual billing is not exposed to
 > extensions, so treat reductions as directional, not exact.`;
@@ -93,7 +102,7 @@ Available tools: ${TOOLS_LINE}.
 
 function instructionsFile(): string {
   return `---
-description: Prefer the codebase knowledge graph (codebase-memory-mcp) before broad file reads.
+description: MANDATORY — query the codebase knowledge graph (codebase-memory-mcp) before any file read or codebase search.
 applyTo: "**"
 ---
 
