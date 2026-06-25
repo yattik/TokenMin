@@ -1,34 +1,68 @@
 # Copilot Token-Efficiency Optimizer (TokenMin)
 
-TokenMin is a VS Code extension that prepares a repository so **Copilot agent
-mode sees less noise, better guidance, and a smaller tool surface**. The goal is
-simple: make agent sessions more accurate while lowering the amount of context
-and tool metadata that has to be sent to the model.
+TokenMin is a VS Code extension that reduces wasted Copilot agent context by
+making a repository easier to retrieve from, reason about, and operate on. It
+combines repo analysis, prompt restructuring, local codebase-memory indexing,
+estimated token comparisons, and reviewable optimization artifacts in one
+workflow.
 
-It does this by analyzing the repo, recommending token-saving changes, showing a
-reviewable diff, and then applying only the changes the user explicitly approves.
-TokenMin produces configuration and repo-structure artifacts that Copilot agent
-mode can consume. It does **not** drive Copilot's agent loop or secretly send work
-to Copilot.
+It does **not** replace Copilot, send background work to Copilot, or drive the
+agent loop. TokenMin prepares better context surfaces for Copilot and gives the
+developer explicit control over every repo mutation.
 
-## ELI5
+## What TokenMin Does Precisely
 
-Imagine Copilot agent mode is a helper trying to fix something in a huge room.
-If the room is full of boxes of generated files, dependency folders, build
-outputs, long instructions, and too many tools, the helper wastes time looking at
-stuff that does not matter.
+TokenMin has four practical jobs:
 
-TokenMin tidies the room before the helper starts:
+1. **Analyze the repository**: walk the repo, detect stack/layout, identify noisy
+   paths, inspect existing VS Code/Copilot configuration, and score how ready the
+   repo is for efficient agent work.
+2. **Generate reviewable optimization artifacts**: propose `.vscode/settings.json`
+   exclusions, `.github/copilot-instructions.md`, scoped instructions, focused
+   Plan/Implement agents, and `ARCHITECTURE.md` where useful.
+3. **Provide knowledge-graph context**: install and manage `codebase-memory-mcp`,
+   index the repo into a local knowledge graph, configure Copilot MCP access, and
+   open the codebase-memory 3D UI directly inside VS Code.
+4. **Improve prompts before they reach Copilot**: restructure vague requests into
+   focused prompts with intent, constraints, likely files/symbols, acceptance
+   criteria, and verification steps.
 
-- It hides obvious clutter such as `node_modules`, build folders, caches, and
-  lockfiles from search and file browsing where appropriate.
-- It writes a short note that explains what the project is and how to work in it.
-- It can add smaller, scoped notes that only load for matching files.
-- It creates a lightweight architecture map so agents do less wandering.
-- It defines focused Plan and Implement agents with smaller tool sets.
-- It shows a before/after efficiency score so the user can see what changed.
+All estimates are transparent. TokenMin uses file-size and prompt-size heuristics
+to compare workflows, because real Copilot billing and exact prompt telemetry are
+not exposed to extensions.
 
-## What The Extension Does
+## Updated Feature Set
+
+| Feature | What it does | Why it matters |
+| --- | --- | --- |
+| Repo analysis dashboard | Shows repo readiness, runtime status, cache stats, and core actions. | Gives teams one place to inspect and run the optimization workflow. |
+| Reviewable optimize flow | Generates recommendations, opens diff previews, and applies only approved changes. | Keeps repo mutations explicit and reversible. |
+| Noise exclusion recommendations | Finds dependency folders, build outputs, caches, generated files, and lockfiles that usually hurt retrieval. | Reduces irrelevant search results and file reads. |
+| Copilot instruction generation | Creates concise always-on and scoped instructions with detected stack/layout guidance. | Gives agents useful rules without bloating every prompt. |
+| Plan/Implement agents | Generates focused custom agents for read-only planning and scoped implementation. | Separates exploration from editing and trims tool metadata. |
+| Knowledge graph runtime | Manages `codebase-memory-mcp`, indexes the repo, and configures MCP access for Copilot. | Lets agents query code structure before reading broad file areas. |
+| Embedded 3D codebase-memory UI | Opens the codebase-memory visualizer directly from the TokenMin dashboard. | Makes the indexed codebase inspectable without switching tools. |
+| Prompt optimizer | Turns vague prompts into structured Copilot-ready requests. | Improves first-shot accuracy and reduces clarification loops. |
+| Query cache | Caches repeated graph queries per repo/query and invalidates them when the graph changes. | Avoids paying repeated context cost for the same lookup. |
+| Token-comparison reports | Generates estimate reports for file-read vs graph-query workflows and multi-turn sessions. | Provides directional evidence for demos and decision-making. |
+
+## Selling Point
+
+TokenMin's selling point is simple: **it turns Copilot from a broad repo browser
+into a better-targeted codebase operator**.
+
+Instead of asking an agent to rediscover project structure every turn, TokenMin
+sets up compact instructions, focused tools, scoped agents, clean search surfaces,
+and a local codebase memory. The practical promise is fewer wasted reads, cleaner
+prompts, faster orientation, and more predictable agent sessions.
+
+For a demo or pitch, frame it as:
+
+> TokenMin reduces the context tax of agentic coding. It does not make Copilot
+> smarter by magic; it gives Copilot less irrelevant material and better local
+> maps, so the same model can spend more of its budget on the actual task.
+
+## Main Optimize Flow
 
 The main command is **Token Optimizer: Analyze & Optimize Repo**
 (`tokenmin.analyzeAndOptimize`). It runs a guided pipeline:
@@ -50,11 +84,17 @@ flowchart LR
   K -->|Yes| M[Apply idempotent changes]
 ```
 
-There are also report-only and reopen-report commands:
+Additional commands:
 
+- **Token Optimizer: Open Dashboard** (`tokenmin.openDashboard`)
+- **Token Optimizer: Optimize Prompt for Copilot** (`tokenmin.optimizePrompt`)
 - **Token Optimizer: Analyze Repo (report only)** (`tokenmin.analyzeOnly`)
 - **Token Optimizer: Show Efficiency Report** (`tokenmin.showReport`)
 - **Token Optimizer: Undo Last Applied Changes** (`tokenmin.undoLast`)
+- **Token Optimizer: Setup Knowledge Graph** (`tokenmin.setupKnowledgeGraph`)
+- **Token Optimizer: Open Knowledge Graph & Analysis** (`tokenmin.openKnowledgeGraph`)
+- **Token Optimizer: Configure Copilot to Use Knowledge Graph** (`tokenmin.configureCopilotMcp`)
+- **Token Optimizer: Knowledge Graph Status** (`tokenmin.knowledgeGraphStatus`)
 
 ## Optimizations Applied For Copilot Agent Mode
 
@@ -302,10 +342,17 @@ Safety properties:
 
 | Setting | Default | Description |
 | --- | --- | --- |
+| `tokenmin.features.knowledgeGraphContext` | `true` | Enables local knowledge-graph context and MCP configuration for Copilot graph tools. |
+| `tokenmin.features.queryCaching` | `true` | Caches repeated graph queries per repo/query and invalidates when the graph changes. |
+| `tokenmin.features.promptRestructuring` | `true` | Enables the prompt optimizer workflow. |
+| `tokenmin.features.tokenTracking` | `true` | Shows estimated token comparisons for prompt, graph, cache, and report workflows. |
+| `tokenmin.features.graph3dVisualization` | `true` | Enables the embedded codebase-memory 3D UI webview. |
 | `tokenmin.exclusionAggressiveness` | `balanced` | Controls exclusion tiers: `conservative`, `balanced`, or `aggressive`. |
 | `tokenmin.modelFamilyPreference` | `gpt-4o` | Preferred Copilot model family for optional tailoring and the implement agent template. |
 | `tokenmin.applyToNewBranch` | `false` | Offers to create a branch before applying changes. |
 | `tokenmin.maxFilesScanned` | `20000` | Caps the file walk for large repositories. |
+| `tokenmin.knowledgeGraph.binaryPath` | empty | Optional absolute path to a manually installed `codebase-memory-mcp` binary. |
+| `tokenmin.knowledgeGraph.uiPort` | `9749` | Port used when starting the embedded codebase-memory 3D UI. |
 
 ## Getting Started On A New System
 
