@@ -290,7 +290,7 @@ function waitForStartup(
 }
 
 /** Download a URL to a file, following GitHub release redirects. */
-function download(url: string, dest: string, redirectsLeft = 5): Promise<void> {
+function download(url: string, dest: string, redirectsLeft = 5, timeoutMs = 120_000): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     const req = https.get(url, { headers: { 'User-Agent': 'TokenMin-VSCode' } }, (res) => {
       const status = res.statusCode ?? 0;
@@ -300,7 +300,7 @@ function download(url: string, dest: string, redirectsLeft = 5): Promise<void> {
           reject(new Error('Too many redirects while downloading runtime.'));
           return;
         }
-        download(res.headers.location, dest, redirectsLeft - 1).then(resolve, reject);
+        download(res.headers.location, dest, redirectsLeft - 1, timeoutMs).then(resolve, reject);
         return;
       }
       if (status !== 200) {
@@ -312,6 +312,11 @@ function download(url: string, dest: string, redirectsLeft = 5): Promise<void> {
       res.pipe(file);
       file.on('finish', () => file.close(() => resolve()));
       file.on('error', reject);
+    });
+    // Without a timeout a stalled or unreachable host leaves the command (Setup /
+    // Index / Configure) hanging forever, which makes the extension look frozen.
+    req.setTimeout(timeoutMs, () => {
+      req.destroy(new Error(`Download timed out after ${timeoutMs}ms for ${url}`));
     });
     req.on('error', reject);
   });

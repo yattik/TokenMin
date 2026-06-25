@@ -1,0 +1,289 @@
+{
+  "generatedAt": "2026-06-25T08:48:46.501Z",
+  "turnOverhead": 220,
+  "totals": {
+    "turns": 26,
+    "defaultTotal": 408952,
+    "graphTotal": 238046,
+    "saved": 170906,
+    "reductionPercent": 42
+  },
+  "sessions": [
+    {
+      "id": "knowledge-graph-hardening",
+      "title": "Knowledge-graph hardening session",
+      "turns": 12,
+      "filesInArea": 12,
+      "broadTokens": 24128,
+      "graphIndexTokens": 339,
+      "defaultTotal": 304056,
+      "graphTotal": 168750,
+      "saved": 135306,
+      "reductionPercent": 45,
+      "rows": [
+        {
+          "turn": 1,
+          "keyword": "cache",
+          "file": "src/knowledgeGraph/queryCache.ts",
+          "defaultTurn": 24128,
+          "graphTurn": 1310,
+          "defaultCum": 24128,
+          "graphCum": 1310
+        },
+        {
+          "turn": 2,
+          "keyword": "runtime",
+          "file": "src/knowledgeGraph/runtime.ts",
+          "defaultTurn": 24348,
+          "graphTurn": 4573,
+          "defaultCum": 48476,
+          "graphCum": 5883
+        },
+        {
+          "turn": 3,
+          "keyword": "download",
+          "file": "src/knowledgeGraph/runtime.ts",
+          "defaultTurn": 24568,
+          "graphTurn": 4793,
+          "defaultCum": 73044,
+          "graphCum": 10676
+        },
+        {
+          "turn": 4,
+          "keyword": "service",
+          "file": "src/knowledgeGraph/service.ts",
+          "defaultTurn": 24788,
+          "graphTurn": 8228,
+          "defaultCum": 97832,
+          "graphCum": 18904
+        },
+        {
+          "turn": 5,
+          "keyword": "index",
+          "file": "src/knowledgeGraph/graphHtml.ts",
+          "defaultTurn": 25008,
+          "graphTurn": 14454,
+          "defaultCum": 122840,
+          "graphCum": 33358
+        },
+        {
+          "turn": 6,
+          "keyword": "platform",
+          "file": "src/knowledgeGraph/platform.ts",
+          "defaultTurn": 25228,
+          "graphTurn": 15459,
+          "defaultCum": 148068,
+          "graphCum": 48817
+        },
+        {
+          "turn": 7,
+          "keyword": "graphModel",
+          "file": "src/knowledgeGraph/graphModel.ts",
+          "defaultTurn": 25448,
+          "graphTurn": 18023,
+          "defaultCum": 173516,
+          "graphCum": 66840
+        },
+        {
+          "turn": 8,
+          "keyword": "commands",
+          "file": "src/knowledgeGraph/commands.ts",
+          "defaultTurn": 25668,
+          "graphTurn": 19942,
+          "defaultCum": 199184,
+          "graphCum": 86782
+        },
+        {
+          "turn": 9,
+          "keyword": "cache",
+          "file": "src/knowledgeGraph/queryCache.ts",
+          "defaultTurn": 25888,
+          "graphTurn": 20162,
+          "defaultCum": 225072,
+          "graphCum": 106944
+        },
+        {
+          "turn": 10,
+          "keyword": "runtime",
+          "file": "src/knowledgeGraph/runtime.ts",
+          "defaultTurn": 26108,
+          "graphTurn": 20382,
+          "defaultCum": 251180,
+          "graphCum": 127326
+        },
+        {
+          "turn": 11,
+          "keyword": "graphHtml",
+          "file": "src/knowledgeGraph/graphHtml.ts",
+          "defaultTurn": 26328,
+          "graphTurn": 20602,
+          "defaultCum": 277508,
+          "graphCum": 147928
+        },
+        {
+          "turn": 12,
+          "keyword": "service",
+          "file": "src/knowledgeGraph/service.ts",
+          "defaultTurn": 26548,
+          "graphTurn": 20822,
+          "defaultCum": 304056,
+          "graphCum": 168750
+        }
+      ]
+    },
+    {
+      "id": "prompt-optimizer-feature",
+      "title": "Prompt optimizer feature session",
+      "turns": 8,
+      "filesInArea": 7,
+      "broadTokens": 7530,
+      "graphIndexTokens": 156,
+      "defaultTotal": 66400,
+      "graphTotal": 41548,
+      "saved": 24852,
+      "reductionPercent": 37,
+      "rows": [
+        {
+          "turn": 1,
+          "keyword": "restructure",
+          "file": "src/prompt/restructure.ts",
+          "defaultTurn": 7530,
+          "graphTurn": 2998,
+          "defaultCum": 7530,
+          "graphCum": 2998
+        },
+        {
+          "turn": 2,
+          "keyword": "classify",
+          "file": "src/prompt/restructure.ts",
+          "defaultTurn": 7750,
+          "graphTurn": 3218,
+          "defaultCum": 15280,
+          "graphCum": 6216
+        },
+        {
+          "turn": 3,
+          "keyword": "chunking",
+          "file": "src/model/chunking.ts",
+          "defaultTurn": 7970,
+          "graphTurn": 3713,
+          "defaultCum": 23250,
+          "graphCum": 9929
+        },
+        {
+          "turn": 4,
+          "keyword": "promptBuilder",
+          "file": "src/model/promptBuilder.ts",
+          "defaultTurn": 8190,
+          "graphTurn": 4688,
+          "defaultCum": 31440,
+          "graphCum": 14617
+        },
+        {
+          "turn": 5,
+          "keyword": "restructure",
+          "file": "src/prompt/restructure.ts",
+          "defaultTurn": 8410,
+          "graphTurn": 4908,
+          "defaultCum": 39850,
+          "graphCum": 19525
+        },
+        {
+          "turn": 6,
+          "keyword": "tailor",
+          "file": "src/model/tailor.ts",
+          "defaultTurn": 8630,
+          "graphTurn": 5521,
+          "defaultCum": 48480,
+          "graphCum": 25046
+        },
+        {
+          "turn": 7,
+          "keyword": "format",
+          "file": "src/prompt/promptPanel.ts",
+          "defaultTurn": 8850,
+          "graphTurn": 8141,
+          "defaultCum": 57330,
+          "graphCum": 33187
+        },
+        {
+          "turn": 8,
+          "keyword": "restructure",
+          "file": "src/prompt/restructure.ts",
+          "defaultTurn": 9070,
+          "graphTurn": 8361,
+          "defaultCum": 66400,
+          "graphCum": 41548
+        }
+      ]
+    },
+    {
+      "id": "report-redesign",
+      "title": "Efficiency report redesign session",
+      "turns": 6,
+      "filesInArea": 5,
+      "broadTokens": 5866,
+      "graphIndexTokens": 101,
+      "defaultTotal": 38496,
+      "graphTotal": 27748,
+      "saved": 10748,
+      "reductionPercent": 28,
+      "rows": [
+        {
+          "turn": 1,
+          "keyword": "scorecard",
+          "file": "src/report/scorecard.ts",
+          "defaultTurn": 5866,
+          "graphTurn": 1438,
+          "defaultCum": 5866,
+          "graphCum": 1438
+        },
+        {
+          "turn": 2,
+          "keyword": "reportHtml",
+          "file": "src/report/reportHtml.ts",
+          "defaultTurn": 6086,
+          "graphTurn": 3685,
+          "defaultCum": 11952,
+          "graphCum": 5123
+        },
+        {
+          "turn": 3,
+          "keyword": "deepLinks",
+          "file": "src/report/deepLinks.ts",
+          "defaultTurn": 6306,
+          "graphTurn": 4424,
+          "defaultCum": 18258,
+          "graphCum": 9547
+        },
+        {
+          "turn": 4,
+          "keyword": "textReport",
+          "file": "src/report/textReport.ts",
+          "defaultTurn": 6526,
+          "graphTurn": 5847,
+          "defaultCum": 24784,
+          "graphCum": 15394
+        },
+        {
+          "turn": 5,
+          "keyword": "scorecard",
+          "file": "src/report/scorecard.ts",
+          "defaultTurn": 6746,
+          "graphTurn": 6067,
+          "defaultCum": 31530,
+          "graphCum": 21461
+        },
+        {
+          "turn": 6,
+          "keyword": "reportHtml",
+          "file": "src/report/reportHtml.ts",
+          "defaultTurn": 6966,
+          "graphTurn": 6287,
+          "defaultCum": 38496,
+          "graphCum": 27748
+        }
+      ]
+    }
+  ]
+}

@@ -6,7 +6,7 @@
  * the local port so this also works in Remote / Codespaces sessions.
  */
 import * as vscode from 'vscode';
-import { brandCssVars } from '../util/theme';
+import { brandCssVars, brandLightSurfaceVars } from '../util/theme';
 
 export class GraphUiPanel {
   private static current: GraphUiPanel | undefined;
@@ -47,12 +47,13 @@ export class GraphUiPanel {
 <head>
 <meta charset="UTF-8" />
 <meta http-equiv="Content-Security-Policy" content="${csp}" />
-<style nonce="${nonce}">${brandCssVars()}
+<style nonce="${nonce}">${brandCssVars()}${brandLightSurfaceVars()}
   html, body { height: 100%; margin: 0; }
-  body { display: flex; flex-direction: column; background: var(--vscode-editor-background); }
+  body { display: flex; flex-direction: column; background: var(--sh-surface); }
   .sh-bar { height: 4px; background: var(--sh-gradient); }
   .bar { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem;
-    padding: 0.4rem 0.7rem; font-family: var(--vscode-font-family); color: var(--vscode-foreground); }
+    padding: 0.45rem 0.8rem; font-family: var(--vscode-font-family); color: var(--sh-text);
+    background: var(--sh-surface); border-bottom: 1px solid var(--sh-border); }
   .brand { font-size: 0.72rem; letter-spacing: 0.04em; text-transform: uppercase;
     color: var(--sh-petrol); font-weight: 600; }
   a.open { color: var(--sh-petrol); font-size: 0.8rem; }
@@ -63,7 +64,7 @@ export class GraphUiPanel {
 <body>
   <div class="sh-bar"></div>
   <div class="bar">
-    <span class="brand">Siemens Healthineers · Knowledge Graph 3D</span>
+    <span class="brand">Token Optimizer · Knowledge Graph 3D</span>
     <a class="open" href="${src}" target="_blank" rel="noreferrer">Open in browser ↗</a>
   </div>
   <iframe src="${src}" title="Codebase knowledge graph"></iframe>

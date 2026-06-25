@@ -181,6 +181,8 @@
     "watch": "node esbuild.js --watch",
     "package": "node esbuild.js --production",
     "verify:bundle": "node scripts/smoke-activate.js",
+    "compare:tokens": "node scripts/token-workflow-compare.js",
+    "compare:sessions": "node scripts/session-compare.js",
     "lint": "eslint src --ext ts",
     "compile-tests": "tsc -p ./tsconfig.json",
     "pretest:unit": "npm run compile-tests",

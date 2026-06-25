@@ -39,7 +39,7 @@ export function renderGraphHtml(model: GraphViewModel, opts: GraphRenderOptions)
 <title>Knowledge Graph</title>
 </head>
 <body>
-  <div class="sh-brand"><span class="dot"></span>Siemens Healthineers · TokenMin</div>
+  <div class="sh-brand"><span class="dot"></span>Token Optimizer</div>
   <div class="sh-bar"></div>
   <header class="top">
     <div>

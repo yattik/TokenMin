@@ -1,9 +1,9 @@
 import * as assert from 'assert';
-import { SIEMENS_HEALTHINEERS, brandComponentStyles, brandCssVars } from '../src/util/theme';
+import { TOKEN_OPTIMIZER_BRAND, brandComponentStyles, brandCssVars } from '../src/util/theme';
 
-describe('theme: Siemens Healthineers brand', () => {
+describe('theme: Token Optimizer brand', () => {
   it('exposes the core palette as hex colors', () => {
-    for (const value of Object.values(SIEMENS_HEALTHINEERS)) {
+    for (const value of Object.values(TOKEN_OPTIMIZER_BRAND)) {
       assert.match(value, /^#[0-9a-fA-F]{6}$/);
     }
   });
@@ -13,7 +13,7 @@ describe('theme: Siemens Healthineers brand', () => {
     assert.ok(css.includes('--sh-petrol:'));
     assert.ok(css.includes('--sh-orange:'));
     assert.ok(css.includes('--sh-gradient:'));
-    assert.ok(css.includes(SIEMENS_HEALTHINEERS.petrol));
+    assert.ok(css.includes(TOKEN_OPTIMIZER_BRAND.petrol));
   });
 
   it('brands shared chrome via the brand variables', () => {

@@ -9,7 +9,7 @@ labeled; TokenMin never claims access to real Copilot billing tokens.
 
 ## 1. Open the dashboard (feature‑control UI)
 - Click **🚀 Token Optimizer** (or run `Token Optimizer: Open Dashboard`).
-- The light, Siemens Healthineers–themed dashboard opens with five toggles:
+- The light, Token Optimizer–themed dashboard opens with five toggles:
   - Knowledge Graph Context
   - Knowledge Graph Query Caching
   - Prompt Restructuring
@@ -69,7 +69,7 @@ labeled; TokenMin never claims access to real Copilot billing tokens.
 
 ## 7. Theme consistency
 - Dashboard, Optimize Prompt, Knowledge Graph, 3D wrapper, and the Efficiency
-  Report all share the Siemens Healthineers palette (petrol/orange/magenta‑violet)
+  Report all share the Token Optimizer palette (petrol/orange/magenta‑violet)
   and a light‑first surface.
 
 ## What is actually verified

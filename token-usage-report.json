@@ -1,0 +1,48 @@
+{
+  "generatedAt": "2026-06-25T08:48:53.352Z",
+  "totals": {
+    "filesScanned": 24,
+    "baselineTokens": 37524,
+    "graphTokens": 8680,
+    "saved": 28844,
+    "reductionPercent": 77
+  },
+  "tasks": [
+    {
+      "id": "validate-prompt",
+      "title": "Add validation to the prompt restructuring flow",
+      "filesScanned": 7,
+      "keyFile": "src/prompt/restructure.ts",
+      "baselineTokens": 7530,
+      "graphContextTokens": 156,
+      "bestFileTokens": 2842,
+      "graphTokens": 2998,
+      "saved": 4532,
+      "reductionPercent": 60
+    },
+    {
+      "id": "graph-query-cache",
+      "title": "Tune the knowledge-graph query cache invalidation",
+      "filesScanned": 12,
+      "keyFile": "src/knowledgeGraph/service.ts",
+      "baselineTokens": 24128,
+      "graphContextTokens": 339,
+      "bestFileTokens": 3215,
+      "graphTokens": 3554,
+      "saved": 20574,
+      "reductionPercent": 85
+    },
+    {
+      "id": "report-scorecard",
+      "title": "Add a new metric to the efficiency scorecard",
+      "filesScanned": 5,
+      "keyFile": "src/report/reportHtml.ts",
+      "baselineTokens": 5866,
+      "graphContextTokens": 101,
+      "bestFileTokens": 2027,
+      "graphTokens": 2128,
+      "saved": 3738,
+      "reductionPercent": 64
+    }
+  ]
+}

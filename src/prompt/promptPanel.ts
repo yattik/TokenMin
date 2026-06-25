@@ -127,7 +127,7 @@ function html(nonce: string, csp: string): string {
 <title>Optimize Prompt</title>
 </head>
 <body>
-  <div class="sh-brand"><span class="dot"></span>Siemens Healthineers · TokenMin</div>
+  <div class="sh-brand"><span class="dot"></span>Token Optimizer</div>
   <div class="sh-bar"></div>
   <h1>Optimize Prompt</h1>
   <p class="muted small">Rewrite a vague request into a focused engineering prompt, then copy it into Copilot Chat.

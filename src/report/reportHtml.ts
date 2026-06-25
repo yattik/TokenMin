@@ -28,7 +28,7 @@ export function renderReportHtml(card: Scorecard, opts: RenderOptions): string {
 <title>Token Efficiency Report</title>
 </head>
 <body>
-  <div class="sh-brand"><span class="dot"></span>Siemens Healthineers · TokenMin</div>
+  <div class="sh-brand"><span class="dot"></span>Token Optimizer</div>
   <div class="sh-bar"></div>
   <h1>Copilot Token-Efficiency Report</h1>
 

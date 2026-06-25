@@ -1,14 +1,14 @@
 /**
- * Siemens Healthineers-inspired brand palette + shared webview CSS variables.
+ * Token Optimizer brand palette + shared webview CSS variables.
  *
  * Pure (no `vscode`/`node`): both the Knowledge Graph panel and the efficiency
  * report inject {@link brandCssVars} and reference the `--sh-*` variables, so the
- * extension UI carries a consistent Siemens Healthineers look while still
+ * extension UI carries a consistent Token Optimizer look while still
  * blending with the user's VS Code theme for backgrounds and text.
  */
 
-/** Core brand colors (Siemens Healthineers visual identity, approximate). */
-export const SIEMENS_HEALTHINEERS = {
+/** Core brand colors (Token Optimizer visual identity). */
+export const TOKEN_OPTIMIZER_BRAND = {
   /** Primary brand teal/petrol. */
   petrol: '#009999',
   /** Deep brand violet used in gradients. */
@@ -28,7 +28,7 @@ export const SIEMENS_HEALTHINEERS = {
  * inside a `<style nonce>` element so it is CSP-safe.
  */
 export function brandCssVars(): string {
-  const c = SIEMENS_HEALTHINEERS;
+  const c = TOKEN_OPTIMIZER_BRAND;
   return `
   :root {
     --sh-petrol: ${c.petrol};
@@ -62,7 +62,7 @@ export function brandComponentStyles(): string {
 }
 
 /**
- * Light, clinical surface variables for the Siemens Healthineers look. The
+ * Light, clinical surface variables for the Token Optimizer look. The
  * dashboard and prompt panels render light-first (white/petrol) regardless of
  * the active VS Code theme, per the brand guidance, while still exposing the
  * `--sh-*` brand colors.

@@ -13,10 +13,11 @@ function render(o: Partial<DashboardData> = {}) {
 }
 
 describe('dashboard html', () => {
-  it('renders outer tabs: Overview and Knowledge Graph', () => {
+  it('renders the Overview tab and a Knowledge Graph 3D shortcut', () => {
     const h = render();
     assert.ok(h.includes('data-outer="overview"'));
-    assert.ok(h.includes('data-outer="graph"'));
+    assert.ok(h.includes('Knowledge Graph 3D'));
+    assert.ok(h.includes('data-action="openUi"'));
   });
   it('shows the 4 core action buttons', () => {
     const h = render();
@@ -28,19 +29,11 @@ describe('dashboard html', () => {
   it('does NOT render feature toggle checkboxes', () => {
     assert.ok(!render().includes('type="checkbox"'));
   });
-  it('shows MCP setup checklist', () => {
+  it('does not render the removed Copilot setup checklist', () => {
     const h = render();
-    assert.ok(h.includes('Copilot setup'));
-    assert.ok(h.includes('mcp.json configured'));
-    assert.ok(h.includes('graph agents written'));
-  });
-  it('shows the no-output tip when fully configured', () => {
-    const h = render();
-    assert.ok(h.includes('graph-plan'));
-    assert.ok(h.includes('graph-implement'));
-  });
-  it('hides the no-output tip when not yet configured', () => {
-    assert.ok(!render({ mcpConfigured: false, agentsConfigured: false }).includes('MCP server running but no tool calls'));
+    assert.ok(!h.includes('Copilot setup'));
+    assert.ok(!h.includes('mcp.json configured'));
+    assert.ok(!h.includes('MCP server running but no tool calls'));
   });
   it('shows cache stats and estimates disclaimer', () => {
     const h = render();
@@ -50,10 +43,10 @@ describe('dashboard html', () => {
   it('uses the light SH surface theme', () => {
     assert.ok(render().includes('--sh-surface'));
   });
-  it('embeds the knowledge graph section', () => {
+  it('does not embed the in-panel knowledge graph section', () => {
     const h = render();
-    assert.ok(h.includes('data-outer-panel="graph"'));
-    assert.ok(h.includes('search_graph'));
+    assert.ok(!h.includes('data-outer-panel="graph"'));
+    assert.ok(!h.includes('search_graph'));
   });
   it('shows Re-index label when already indexed', () => {
     const m = emptyModel('demo', undefined);
