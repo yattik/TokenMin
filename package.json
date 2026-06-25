@@ -29,6 +29,16 @@
   "contributes": {
     "commands": [
       {
+        "command": "tokenmin.openDashboard",
+        "title": "Token Optimizer: Open Dashboard",
+        "category": "Token Optimizer"
+      },
+      {
+        "command": "tokenmin.optimizePrompt",
+        "title": "Token Optimizer: Optimize Prompt for Copilot",
+        "category": "Token Optimizer"
+      },
+      {
         "command": "tokenmin.analyzeAndOptimize",
         "title": "Token Optimizer: Analyze & Optimize Repo",
         "category": "Token Optimizer"
@@ -47,11 +57,61 @@
         "command": "tokenmin.undoLast",
         "title": "Token Optimizer: Undo Last Applied Changes",
         "category": "Token Optimizer"
+      },
+      {
+        "command": "tokenmin.setupKnowledgeGraph",
+        "title": "Token Optimizer: Setup Knowledge Graph (install once)",
+        "category": "Token Optimizer"
+      },
+      {
+        "command": "tokenmin.indexKnowledgeGraph",
+        "title": "Token Optimizer: Index Repo Into Knowledge Graph",
+        "category": "Token Optimizer"
+      },
+      {
+        "command": "tokenmin.openKnowledgeGraph",
+        "title": "Token Optimizer: Open Knowledge Graph & Analysis",
+        "category": "Token Optimizer"
+      },
+      {
+        "command": "tokenmin.knowledgeGraphStatus",
+        "title": "Token Optimizer: Knowledge Graph Status",
+        "category": "Token Optimizer"
+      },
+      {
+        "command": "tokenmin.configureCopilotMcp",
+        "title": "Token Optimizer: Configure Copilot to Use Knowledge Graph",
+        "category": "Token Optimizer"
       }
     ],
     "configuration": {
       "title": "Copilot Token-Efficiency Optimizer",
       "properties": {
+        "tokenmin.features.knowledgeGraphContext": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Knowledge Graph Context: let Copilot agents query the local codebase knowledge graph (codebase-memory-mcp) before broad file reads. Drives whether `Configure Copilot to Use Knowledge Graph` writes the MCP server + graph agents."
+        },
+        "tokenmin.features.queryCaching": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Knowledge Graph Query Caching: cache `search_graph` / `trace_path` results per repo + query so repeated agent queries are cheap. The cache is invalidated when indexing or `detect_changes` shows the graph changed."
+        },
+        "tokenmin.features.promptRestructuring": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Prompt Restructuring: enable the `Optimize Prompt` workflow that rewrites vague prompts into focused intent, constraints, relevant files/symbols, acceptance criteria and verification steps before you paste them into Copilot Chat."
+        },
+        "tokenmin.features.tokenTracking": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Token Comparison Tracking: show estimated token usage with and without TokenMin (graph vs file reads, original vs restructured prompt, cached vs fresh query). Estimates only — actual Copilot billing is not exposed to extensions."
+        },
+        "tokenmin.features.graph3dVisualization": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "3D Knowledge Graph Visualization: enable the embedded VS Code webview that hosts the codebase-memory-mcp 3D graph UI (no external browser required)."
+        },
         "tokenmin.exclusionAggressiveness": {
           "type": "string",
           "enum": [
@@ -76,6 +136,16 @@
           "type": "number",
           "default": 20000,
           "markdownDescription": "Safety cap on the number of files walked during analysis. Large repos are bounded to keep analysis fast."
+        },
+        "tokenmin.knowledgeGraph.binaryPath": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Advanced: absolute path to a manually installed `codebase-memory-mcp` binary. Leave empty to let TokenMin install and manage a single copy in extension global storage (installed once, reused for every repository)."
+        },
+        "tokenmin.knowledgeGraph.uiPort": {
+          "type": "number",
+          "default": 9749,
+          "markdownDescription": "Port to use when opening the optional codebase-memory-mcp 3D graph UI."
         }
       }
     },

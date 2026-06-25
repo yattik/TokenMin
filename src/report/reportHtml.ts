@@ -5,6 +5,7 @@
 import { Scorecard } from './scorecard';
 import { UsageEstimate } from './scorecard';
 import { ScoreCriterion } from '../recommendations/types';
+import { brandComponentStyles, brandCssVars } from '../util/theme';
 
 export interface RenderOptions {
   nonce: string;
@@ -23,10 +24,12 @@ export function renderReportHtml(card: Scorecard, opts: RenderOptions): string {
 <meta charset="UTF-8" />
 <meta http-equiv="Content-Security-Policy" content="${csp}" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<style nonce="${opts.nonce}">${styles()}</style>
+<style nonce="${opts.nonce}">${brandCssVars()}${brandComponentStyles()}${styles()}</style>
 <title>Token Efficiency Report</title>
 </head>
 <body>
+  <div class="sh-brand"><span class="dot"></span>Siemens Healthineers · TokenMin</div>
+  <div class="sh-bar"></div>
   <h1>Copilot Token-Efficiency Report</h1>
 
   <section class="score-row">

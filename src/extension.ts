@@ -15,6 +15,9 @@ import { generateArtifacts, runModelTailoringIfConsented } from './flow/generate
 import { GeneratedFile, ApplyHistory } from './apply/types';
 import { buildScorecard, Scorecard } from './report/scorecard';
 import { ReportPanel } from './report/reportWebview';
+import { registerKnowledgeGraphCommands, getGraphService } from './knowledgeGraph/commands';
+import { DashboardPanel } from './dashboard/dashboardPanel';
+import { PromptPanel } from './prompt/promptPanel';
 
 let previewProvider: PreviewContentProvider;
 let applyService: ApplyService;
@@ -25,21 +28,27 @@ export function activate(context: vscode.ExtensionContext): void {
   applyService = new ApplyService(previewProvider, new ApplyHistory(context.workspaceState));
 
   // Persistent entry point: a status-bar button that is always available, even
-  // after the walkthrough or report panel is closed.
+  // after the walkthrough or report panel is closed. It opens the feature-control
+  // dashboard.
   const statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
   statusBar.text = '$(rocket) Token Optimizer';
-  statusBar.tooltip = 'Analyze & optimize this repo for Copilot agent mode';
-  statusBar.command = 'tokenmin.analyzeAndOptimize';
+  statusBar.tooltip = 'Open the Token Optimizer dashboard (features, knowledge graph, token tracking)';
+  statusBar.command = 'tokenmin.openDashboard';
   statusBar.show();
 
   context.subscriptions.push(
     previewProvider,
     statusBar,
     vscode.workspace.registerTextDocumentContentProvider(PreviewContentProvider.scheme, previewProvider),
+    vscode.commands.registerCommand('tokenmin.openDashboard', () =>
+      runSafely('Open Dashboard', () => DashboardPanel.show(getGraphService(context))),
+    ),
+    vscode.commands.registerCommand('tokenmin.optimizePrompt', () => runSafely('Optimize Prompt', openOptimizePrompt)),
     vscode.commands.registerCommand('tokenmin.analyzeAndOptimize', () => runSafely('Analyze & Optimize', () => runAnalyze(true))),
     vscode.commands.registerCommand('tokenmin.analyzeOnly', () => runSafely('Analyze', () => runAnalyze(false))),
     vscode.commands.registerCommand('tokenmin.showReport', () => runSafely('Show Report', showReport)),
     vscode.commands.registerCommand('tokenmin.undoLast', () => runSafely('Undo', () => applyService.undoLast())),
+    ...registerKnowledgeGraphCommands(context, applyService),
   );
 }
 
@@ -140,4 +149,18 @@ function showReport(): void {
   } else {
     void vscode.window.showInformationMessage('Run "Analyze & Optimize Repo" first to generate a report.');
   }
+}
+
+/** Open the Optimize Prompt panel, honoring the dashboard toggle. */
+function openOptimizePrompt(): void {
+  const enabled = vscode.workspace.getConfiguration('tokenmin').get<boolean>('features.promptRestructuring', true);
+  if (!enabled) {
+    void vscode.window.showInformationMessage(
+      'Prompt Restructuring is turned off. Enable it in the Token Optimizer dashboard.',
+    );
+    return;
+  }
+  const folder = vscode.workspace.workspaceFolders?.[0];
+  const repoName = folder ? folder.uri.fsPath.split(/[\\/]/).filter(Boolean).pop() : undefined;
+  PromptPanel.show({ repoName });
 }
